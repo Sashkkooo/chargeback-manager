@@ -7,6 +7,8 @@ export default function CaseDetails() {
     const navigate = useNavigate();
 
     const [isDrag, setIsDrag] = useState(false);
+    const [note, setNote] = useState("");
+    const [showTimeline, setShowTimeline] = useState(false);
 
 
     const { cases, removeCase, updateCase } = useCases();
@@ -129,20 +131,41 @@ export default function CaseDetails() {
             </div>
             <div>
                 <h2 className="text-xl font-semibold mb-2">Evidence</h2>
+
                 {item.evidence.length === 0 ? (
                     <p className="text-gray-500">No evidence uploaded</p>
                 ) : (
-                    <ul className="list-disc pl-6">
+                    <ul className="space-y-3">
                         {item.evidence.map((ev) => (
-                            <li key={ev.id} className="flex items-center justify-between">
-                                <a
-                                    href={ev.url}
-                                    className="text-blue-600 underline"
-                                    target="_blank"
-                                >
-                                    {ev.filename}
+                            <li key={ev.id} className="flex items-center gap-4">
+
+                                {/* THUMBNAIL + LINK */}
+                                <a href={ev.url} target="_blank" className="block">
+                                    {ev.type.startsWith("image/") ? (
+                                        <img
+                                            src={ev.url}
+                                            alt={ev.filename}
+                                            className="w-20 h-20 object-cover rounded border"
+                                        />
+                                    ) : (
+                                        <div className="w-20 h-20 flex items-center justify-center border rounded bg-gray-100 text-gray-600 text-sm">
+                                            {ev.type.includes("pdf") ? "📄 PDF" : "📦 File"}
+                                        </div>
+                                    )}
                                 </a>
 
+                                {/* FILENAME LINK */}
+                                <div className="flex-1">
+                                    <a
+                                        href={ev.url}
+                                        target="_blank"
+                                        className="text-blue-600 underline break-all"
+                                    >
+                                        {ev.filename}
+                                    </a>
+                                </div>
+
+                                {/* DELETE BUTTON */}
                                 <button
                                     onClick={() => {
                                         const updatedEvidence = item.evidence.filter((e) => e.id !== ev.id);
@@ -155,7 +178,7 @@ export default function CaseDetails() {
                                                     id: crypto.randomUUID(),
                                                     message: `Evidence removed: ${ev.filename}`,
                                                     timestamp: new Date().toISOString(),
-                                                    actor: "merchant",
+                                                    actor: "merchant" as const,
                                                 },
                                             ],
                                         });
@@ -169,22 +192,73 @@ export default function CaseDetails() {
                     </ul>
                 )}
             </div>
-            {/* TIMELINE */}
-            <div>
-                <h2 className="text-xl font-semibold mb-2">Timeline</h2>
-                {item.timeline.length === 0 ? (
-                    <p className="text-gray-500">No timeline events</p>
-                ) : (
-                    <ul className="space-y-2">
-                        {item.timeline.map((t) => (
-                            <li key={t.id} className="border p-3 rounded">
-                                <p><strong>{t.actor}</strong> — {new Date(t.timestamp).toLocaleString()}</p>
-                                <p>{t.message}</p>
-                            </li>
-                        ))}
-                    </ul>
-                )}
+            {/* ADD NOTE */}
+            <div className="mt-6 p-4 border rounded">
+                <h3 className="font-semibold mb-2">Add Note</h3>
+
+                <textarea
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder="Write your internal note here..."
+                    className="w-full border rounded p-2 mb-3"
+                    rows={3}
+                />
+
+                <button
+                    onClick={() => {
+                        if (!note.trim()) return;
+
+                        const newEvent = {
+                            id: crypto.randomUUID(),
+                            message: note.trim(),
+                            timestamp: new Date().toISOString(),
+                            actor: "merchant" as const,
+                        };
+
+                        updateCase(item.id, {
+                            timeline: [...item.timeline, newEvent],
+                        });
+
+                        setNote("");
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                    Add Note
+                </button>
             </div>
+
+            {/* TIMELINE */}
+            <div
+                className="mt-6 p-4 border rounded cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
+                onClick={() => setShowTimeline(!showTimeline)}
+            >
+                <h2 className="text-xl font-semibold flex justify-between items-center">
+                    Timeline
+                    <span className="text-gray-600 text-sm">
+                        {showTimeline ? "▲" : "▼"}
+                    </span>
+                </h2>
+            </div>
+            {showTimeline && (
+                <div className="mt-2">
+                    {item.timeline.length === 0 ? (
+                        <p className="text-gray-500">No timeline events</p>
+                    ) : (
+                        <ul className="space-y-2">
+                            {item.timeline.map((t) => (
+                                <li key={t.id} className="border p-3 rounded bg-white">
+                                    <p>
+                                        <strong>{t.actor}</strong> —{" "}
+                                        {new Date(t.timestamp).toLocaleString()}
+                                    </p>
+                                    <p>{t.message}</p>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            )}
+
 
             {/* ACTION BUTTONS */}
             <div className="flex gap-4">
