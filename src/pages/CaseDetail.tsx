@@ -1,11 +1,15 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useCases } from "../store/useCases";
+import { useState } from "react";
 
 export default function CaseDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const { cases, removeCase } = useCases();
+    const [isDrag, setIsDrag] = useState(false);
+
+
+    const { cases, removeCase, updateCase } = useCases();
     const item = cases.find((c) => c.id === id);
 
     if (!item) {
@@ -53,6 +57,76 @@ export default function CaseDetails() {
             </div>
 
             {/* EVIDENCE */}
+            {/* EVIDENCE UPLOAD (Drag & Drop + Multiple Files) */}
+            <div
+                className={`mt-4 p-6 border-2 border-dashed rounded text-center transition cursor-pointer ${isDrag ? "border-blue-500 bg-blue-50" : "border-gray-400"
+                    }`}
+                onDragOver={(e) => e.preventDefault()}
+                onDragEnter={() => setIsDrag(true)}
+                onDragLeave={() => setIsDrag(false)}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDrag(false);
+
+                    const files = Array.from(e.dataTransfer.files);
+                    if (files.length === 0) return;
+
+                    const newEvidenceItems = files.map((file) => ({
+                        id: crypto.randomUUID(),
+                        filename: file.name,
+                        url: URL.createObjectURL(file),
+                        type: file.type,
+                    }));
+
+                    updateCase(item.id, {
+                        evidence: [...item.evidence, ...newEvidenceItems],
+                        timeline: [
+                            ...item.timeline,
+                            ...newEvidenceItems.map((ev) => ({
+                                id: crypto.randomUUID(),
+                                message: `Evidence uploaded: ${ev.filename}`,
+                                timestamp: new Date().toISOString(),
+                                actor: "merchant" as const,
+                            })),
+                        ],
+                    });
+                }}
+                onClick={() => document.getElementById("fileUploadInput")?.click()}
+            >
+                <p className="text-gray-600">Drag & Drop evidence here</p>
+                <p className="text-sm text-gray-400">or click to select files</p>
+
+                <input
+                    id="fileUploadInput"
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        if (files.length === 0) return;
+
+                        const newEvidenceItems = files.map((file) => ({
+                            id: crypto.randomUUID(),
+                            filename: file.name,
+                            url: URL.createObjectURL(file),
+                            type: file.type,
+                        }));
+
+                        updateCase(item.id, {
+                            evidence: [...item.evidence, ...newEvidenceItems],
+                            timeline: [
+                                ...item.timeline,
+                                ...newEvidenceItems.map((ev) => ({
+                                    id: crypto.randomUUID(),
+                                    message: `Evidence uploaded: ${ev.filename}`,
+                                    timestamp: new Date().toISOString(),
+                                    actor: "merchant" as const,
+                                })),
+                            ],
+                        });
+                    }}
+                />
+            </div>
             <div>
                 <h2 className="text-xl font-semibold mb-2">Evidence</h2>
                 {item.evidence.length === 0 ? (
@@ -60,16 +134,41 @@ export default function CaseDetails() {
                 ) : (
                     <ul className="list-disc pl-6">
                         {item.evidence.map((ev) => (
-                            <li key={ev.id}>
-                                <a href={ev.url} className="text-blue-600 underline" target="_blank">
+                            <li key={ev.id} className="flex items-center justify-between">
+                                <a
+                                    href={ev.url}
+                                    className="text-blue-600 underline"
+                                    target="_blank"
+                                >
                                     {ev.filename}
                                 </a>
+
+                                <button
+                                    onClick={() => {
+                                        const updatedEvidence = item.evidence.filter((e) => e.id !== ev.id);
+
+                                        updateCase(item.id, {
+                                            evidence: updatedEvidence,
+                                            timeline: [
+                                                ...item.timeline,
+                                                {
+                                                    id: crypto.randomUUID(),
+                                                    message: `Evidence removed: ${ev.filename}`,
+                                                    timestamp: new Date().toISOString(),
+                                                    actor: "merchant",
+                                                },
+                                            ],
+                                        });
+                                    }}
+                                    className="text-red-600 hover:text-red-800 text-sm"
+                                >
+                                    Delete
+                                </button>
                             </li>
                         ))}
                     </ul>
                 )}
             </div>
-
             {/* TIMELINE */}
             <div>
                 <h2 className="text-xl font-semibold mb-2">Timeline</h2>
