@@ -1,7 +1,9 @@
 import { useCases } from "../store/useCases";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
     const { cases } = useCases();
+    const navigate = useNavigate()
 
     return (
         <div className="space-y-6">
@@ -37,19 +39,23 @@ export default function Dashboard() {
                                 <td className="p-3">
                                     <span
                                         className={`px-2 py-1 text-sm rounded ${c.status === "pending"
-                                                ? "bg-yellow-200 text-yellow-800"
-                                                : c.status === "approved"
-                                                    ? "bg-green-200 text-green-800"
-                                                    : "bg-red-200 text-red-800"
+                                            ? "bg-yellow-200 text-yellow-800"
+                                            : c.status === "approved"
+                                                ? "bg-green-200 text-green-800"
+                                                : "bg-red-200 text-red-800"
                                             }`}
                                     >
                                         {c.status}
                                     </span>
                                 </td>
                                 <td className="p-3">
-                                    <button className="text-blue-600 hover:underline">
+                                    <button
+                                        onClick={() => navigate(`/case/${c.id}`)}
+                                        className="text-blue-600 hover:underline"
+                                    >
                                         View
                                     </button>
+
                                 </td>
                             </tr>
                         ))}

@@ -1,40 +1,55 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useCases } from "../store/useCases";
 import type { CaseStatus, CaseStage } from "../types/case";
 
-export default function NewCase() {
+export default function EditCase() {
+    const { id } = useParams();
     const navigate = useNavigate();
-    const addCase = useCases((state) => state.addCase);
 
-    const [customer, setCustomer] = useState("");
-    const [amount, setAmount] = useState("");
-    const [status, setStatus] = useState<CaseStatus>("pending");
+    const { cases, updateCase } = useCases();
+    const item = cases.find((c) => c.id === id);
 
-    const [reason, setReason] = useState("");
-    const [merchant, setMerchant] = useState("");
-    const [stage, setStage] = useState<CaseStage>("inquiry");
+    if (!item) {
+        return (
+            <div className="p-6 bg-white shadow rounded">
+                <h1 className="text-2xl font-bold mb-4">Case not found</h1>
+                <button
+                    onClick={() => navigate("/")}
+                    className="px-4 py-2 bg-blue-600 text-white rounded"
+                >
+                    Back to Dashboard
+                </button>
+            </div>
+        );
+    }
+
+    const [customer, setCustomer] = useState(item.customer);
+    const [amount, setAmount] = useState(String(item.amount));
+    const [status, setStatus] = useState<CaseStatus>(item.status);
+
+    const [reason, setReason] = useState(item.reason);
+    const [merchant, setMerchant] = useState(item.merchant);
+    const [stage, setStage] = useState<CaseStage>(item.stage);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        addCase({
+        updateCase(item.id, {
             customer,
             amount: Number(amount),
             status,
             reason,
             merchant,
             stage,
-            evidence: [],
-            timeline: [],
         });
 
-        navigate("/");
+        navigate(`/case/${item.id}`);
     };
 
     return (
         <div className="max-w-xl mx-auto bg-white p-8 shadow rounded space-y-6">
-            <h1 className="text-3xl font-bold">Create New Case</h1>
+            <h1 className="text-3xl font-bold">Edit Case</h1>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Customer */}
@@ -86,7 +101,6 @@ export default function NewCase() {
                         onChange={(e) => setReason(e.target.value)}
                         required
                         className="w-full border rounded px-3 py-2"
-                        placeholder="Unauthorized transaction"
                     />
                 </div>
 
@@ -99,7 +113,6 @@ export default function NewCase() {
                         onChange={(e) => setMerchant(e.target.value)}
                         required
                         className="w-full border rounded px-3 py-2"
-                        placeholder="My Online Store"
                     />
                 </div>
 
@@ -123,7 +136,7 @@ export default function NewCase() {
                     type="submit"
                     className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
                 >
-                    Create Case
+                    Save Changes
                 </button>
             </form>
         </div>
