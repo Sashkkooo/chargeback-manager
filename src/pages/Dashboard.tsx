@@ -1,14 +1,42 @@
 import { useCases } from "../store/useCases";
 import { useNavigate } from "react-router-dom";
+import StageBadge from "../components/StageBadge";
+import type { CaseStage } from "../types/case";
+import { useState } from "react";
+
+
+
 
 export default function Dashboard() {
     const { cases } = useCases();
+    const [stageFilter, setStageFilter] = useState<CaseStage | "all">("all");
+    const filteredCases =
+        stageFilter === "all"
+            ? cases
+            : cases.filter((c) => c.stage === stageFilter);
+
     const navigate = useNavigate()
+
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Cases</h1>
+                <div className="flex gap-2">
+                    {["all", "inquiry", "chargeback", "pre-arbitration", "arbitration"].map((stage) => (
+                        <button
+                            key={stage}
+                            onClick={() => setStageFilter(stage as any)}
+                            className={`px-3 py-1 rounded text-sm ${stageFilter === stage
+                                ? "bg-blue-600 text-white"
+                                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                }`}
+                        >
+                            {stage === "all" ? "All" : stage}
+                        </button>
+                    ))}
+                </div>
+
 
                 <a
                     href="/new"
@@ -26,12 +54,13 @@ export default function Dashboard() {
                             <th className="p-3">Customer</th>
                             <th className="p-3">Amount</th>
                             <th className="p-3">Status</th>
+                            <th className="p-3">Stage</th>
                             <th className="p-3">Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        {cases.map((c) => (
+                        {filteredCases.map((c) => (
                             <tr key={c.id} className="border-b">
                                 <td className="p-3">{c.id}</td>
                                 <td className="p-3">{c.customer}</td>
@@ -48,6 +77,10 @@ export default function Dashboard() {
                                         {c.status}
                                     </span>
                                 </td>
+                                <td className="p-3">
+                                    <StageBadge stage={c.stage} />
+                                </td>
+
                                 <td className="p-3">
                                     <button
                                         onClick={() => navigate(`/case/${c.id}`)}

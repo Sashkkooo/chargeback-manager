@@ -1,6 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useCases } from "../store/useCases";
 import { useState } from "react";
+import type { CaseStage } from "../types/case";
+import StageBadge from "../components/StageBadge";
+
 
 export default function CaseDetails() {
     const { id } = useParams();
@@ -33,6 +36,9 @@ export default function CaseDetails() {
         navigate("/");
     };
 
+
+
+
     return (
         <div className="max-w-2xl mx-auto bg-white p-8 shadow rounded space-y-6">
             <h1 className="text-3xl font-bold">Case Details</h1>
@@ -49,7 +55,11 @@ export default function CaseDetails() {
             <div className="space-y-2">
                 <p><strong>Reason:</strong> {item.reason}</p>
                 <p><strong>Merchant:</strong> {item.merchant}</p>
-                <p><strong>Stage:</strong> {item.stage}</p>
+                <p>
+                    <strong>Stage:</strong>
+                    <StageBadge stage={item.stage} />
+                </p>
+
             </div>
 
             {/* DATES */}
@@ -57,6 +67,36 @@ export default function CaseDetails() {
                 <p><strong>Created At:</strong> {new Date(item.createdAt).toLocaleString()}</p>
                 <p><strong>Updated At:</strong> {new Date(item.updatedAt).toLocaleString()}</p>
             </div>
+
+            <div className="mt-4">
+                <label className="block font-semibold mb-1">Stage</label>
+                <select
+                    value={item.stage}
+                    onChange={(e) => {
+                        const newStage = e.target.value as CaseStage;
+
+                        updateCase(item.id, {
+                            stage: newStage,
+                            timeline: [
+                                ...item.timeline,
+                                {
+                                    id: crypto.randomUUID(),
+                                    message: `Stage changed from ${item.stage} to ${newStage}`,
+                                    timestamp: new Date().toISOString(),
+                                    actor: "merchant" as const,
+                                },
+                            ],
+                        });
+                    }}
+                    className="border rounded p-2 w-full"
+                >
+                    <option value="inquiry">Inquiry</option>
+                    <option value="chargeback">Chargeback</option>
+                    <option value="pre-arbitration">Pre-Arbitration</option>
+                    <option value="arbitration">Arbitration</option>
+                </select>
+            </div>
+
 
             {/* EVIDENCE */}
             {/* EVIDENCE UPLOAD (Drag & Drop + Multiple Files) */}
@@ -258,7 +298,6 @@ export default function CaseDetails() {
                     )}
                 </div>
             )}
-
 
             {/* ACTION BUTTONS */}
             <div className="flex gap-4">
