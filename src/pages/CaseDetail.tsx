@@ -37,11 +37,61 @@ export default function CaseDetails() {
     };
 
 
+    const stages: CaseStage[] = [
+        "inquiry",
+        "chargeback",
+        "pre-arbitration",
+        "arbitration",
+    ];
 
 
     return (
         <div className="max-w-2xl mx-auto bg-white p-8 shadow rounded space-y-6">
             <h1 className="text-3xl font-bold">Case Details</h1>
+
+            <div className="mt-4">
+                <div className="flex items-center justify-between">
+                    {stages.map((stage, index) => {
+                        const currentIndex = stages.indexOf(item.stage);
+                        const isCompleted = index < currentIndex;
+                        const isCurrent = index === currentIndex;
+
+                        return (
+                            <div key={stage} className="flex-1 flex flex-col items-center">
+                                {/* Circle */}
+                                <div
+                                    className={`
+              w-4 h-4 rounded-full 
+              ${isCompleted ? "bg-green-500" : ""}
+              ${isCurrent ? "bg-blue-600" : ""}
+              ${!isCompleted && !isCurrent ? "bg-gray-300" : ""}
+            `}
+                                />
+
+                                {/* Label */}
+                                <span
+                                    className={`
+              mt-2 text-xs 
+              ${isCurrent ? "font-bold text-blue-600" : "text-gray-600"}
+            `}
+                                >
+                                    {stage}
+                                </span>
+
+                                {/* Line connector */}
+                                {index < stages.length - 1 && (
+                                    <div
+                                        className={`
+                h-1 w-full mt-2
+                ${isCompleted ? "bg-green-500" : "bg-gray-300"}
+              `}
+                                    />
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
 
             {/* BASIC INFO */}
             <div className="space-y-2">
