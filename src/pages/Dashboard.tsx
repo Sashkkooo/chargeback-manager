@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import StageBadge from "../components/StageBadge";
 import type { CaseStage } from "../types/case";
 import { useState } from "react";
+import StatusBadge from "../components/StatusBadge";
 
 
 
@@ -16,6 +17,14 @@ export default function Dashboard() {
             : cases.filter((c) => c.stage === stageFilter);
 
     const navigate = useNavigate()
+
+    function getDaysLeft(deadline: string) {
+        const now = new Date();
+        const end = new Date(deadline);
+        const diff = end.getTime() - now.getTime();
+        return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    }
+
 
 
     return (
@@ -56,6 +65,7 @@ export default function Dashboard() {
                             <th className="p-3">Status</th>
                             <th className="p-3">Stage</th>
                             <th className="p-3">Actions</th>
+                            <th className="p-3">Deadline</th>
                         </tr>
                     </thead>
 
@@ -66,16 +76,10 @@ export default function Dashboard() {
                                 <td className="p-3">{c.customer}</td>
                                 <td className="p-3">${c.amount.toFixed(2)}</td>
                                 <td className="p-3">
-                                    <span
-                                        className={`px-2 py-1 text-sm rounded ${c.status === "pending"
-                                            ? "bg-yellow-200 text-yellow-800"
-                                            : c.status === "approved"
-                                                ? "bg-green-200 text-green-800"
-                                                : "bg-red-200 text-red-800"
-                                            }`}
-                                    >
-                                        {c.status}
-                                    </span>
+                                    <td className="p-3">
+                                        <StatusBadge status={c.status} />
+                                    </td>
+
                                 </td>
                                 <td className="p-3">
                                     <StageBadge stage={c.stage} />
@@ -90,6 +94,22 @@ export default function Dashboard() {
                                     </button>
 
                                 </td>
+                                <td className="p-3">
+                                    {(() => {
+                                        const daysLeft = getDaysLeft(c.deadline);
+
+                                        let color = "text-green-600";
+                                        if (daysLeft <= 3 && daysLeft > 0) color = "text-yellow-600";
+                                        if (daysLeft <= 0) color = "text-red-600";
+
+                                        return (
+                                            <span className={`font-semibold ${color}`}>
+                                                {daysLeft > 0 ? `${daysLeft}d` : "Expired"}
+                                            </span>
+                                        );
+                                    })()}
+                                </td>
+
                             </tr>
                         ))}
                     </tbody>

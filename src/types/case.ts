@@ -1,4 +1,4 @@
-export type CaseStatus = "pending" | "approved" | "rejected";
+export type CaseStatus = "open" | "pending" | "won" | "lost";
 
 export type CaseStage =
     | "inquiry"
@@ -33,6 +33,7 @@ export interface CaseItem {
 
     createdAt: string;
     updatedAt: string;
+    deadline: string;
 
     evidence: EvidenceItem[];
     timeline: TimelineEvent[];

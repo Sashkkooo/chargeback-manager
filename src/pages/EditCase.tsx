@@ -86,9 +86,10 @@ export default function EditCase() {
                         onChange={(e) => setStatus(e.target.value as CaseStatus)}
                         className="w-full border rounded px-3 py-2"
                     >
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="pending">Open</option>
+                        <option value="approved">Pending</option>
+                        <option value="rejected">Won</option>
+                        <option value="rejected">Lost</option>
                     </select>
                 </div>
 
