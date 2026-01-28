@@ -10,7 +10,7 @@ const statusColors: Record<CaseStatus, string> = {
 export default function StatusBadge({ status }: { status: CaseStatus }) {
     return (
         <span
-            className={`px-2 py-1 text-xs font-semibold rounded ${statusColors[status]}`}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg capitalize tracking-wide ${statusColors[status]}`}
         >
             {status}
         </span>

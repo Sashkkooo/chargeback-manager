@@ -3,10 +3,10 @@ import type { CaseItem, CaseStatus } from "../types/case";
 
 interface CaseStore {
     cases: CaseItem[];
-    addCase: (data: Omit<CaseItem, "id" | "createdAt" | "updatedAt">) => void;
+    addCase: (data: Omit<CaseItem, "id">) => void;
     updateCase: (id: string, data: Partial<CaseItem>) => void;
     removeCase: (id: string) => void;
-    updateCaseStatus: (id: string, status: CaseStatus) => void; // <-- добавено тук
+    updateCaseStatus: (id: string, status: CaseStatus) => void;
 }
 
 export const useCases = create<CaseStore>((set) => ({
@@ -41,7 +41,7 @@ export const useCases = create<CaseStore>((set) => ({
         },
     ],
 
- 
+    // Update only the status (used by CaseStatusSelector)
     updateCaseStatus: (id, status) =>
         set((state) => ({
             cases: state.cases.map((c) =>
@@ -51,19 +51,19 @@ export const useCases = create<CaseStore>((set) => ({
             ),
         })),
 
+    // Add a new case
     addCase: (data) =>
         set((state) => ({
             cases: [
                 ...state.cases,
                 {
                     id: crypto.randomUUID(),
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
                     ...data,
                 },
             ],
         })),
 
+    // Generic update — accepts Partial<CaseItem>
     updateCase: (id, data) =>
         set((state) => ({
             cases: state.cases.map((c) =>
@@ -73,6 +73,7 @@ export const useCases = create<CaseStore>((set) => ({
             ),
         })),
 
+    // Remove a case
     removeCase: (id) =>
         set((state) => ({
             cases: state.cases.filter((c) => c.id !== id),

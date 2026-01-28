@@ -8,12 +8,14 @@ export default function CaseStageSelector({
     onChange: (newStage: CaseStage) => void;
 }) {
     return (
-        <div className="mt-4">
-            <label className="block font-semibold mb-1">Stage</label>
+        <div className="space-y-2">
+            <label className="block font-medium text-gray-700">Stage</label>
+
             <select
                 value={item.stage}
                 onChange={(e) => onChange(e.target.value as CaseStage)}
-                className="border rounded p-2 w-full"
+                className="w-full border rounded-lg px-3 py-2 text-sm bg-white
+                           focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
                 <option value="inquiry">Inquiry</option>
                 <option value="chargeback">Chargeback</option>

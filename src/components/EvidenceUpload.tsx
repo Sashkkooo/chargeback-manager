@@ -23,8 +23,9 @@ export default function EvidenceUpload({
 
     return (
         <div
-            className={`mt-4 p-6 border-2 border-dashed rounded text-center transition cursor-pointer ${isDrag ? "border-blue-500 bg-blue-50" : "border-gray-400"
-                }`}
+            className={`p-8 border-2 border-dashed rounded-lg text-center transition 
+                        cursor-pointer bg-white shadow-sm
+                        ${isDrag ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
             onDragOver={(e) => e.preventDefault()}
             onDragEnter={() => setIsDrag(true)}
             onDragLeave={() => setIsDrag(false)}
@@ -35,8 +36,8 @@ export default function EvidenceUpload({
             }}
             onClick={() => document.getElementById("fileUploadInput")?.click()}
         >
-            <p className="text-gray-600">Drag & Drop evidence here</p>
-            <p className="text-sm text-gray-400">or click to select files</p>
+            <p className="text-gray-700 font-medium">Drag & Drop evidence here</p>
+            <p className="text-sm text-gray-500 mt-1">or click to select files</p>
 
             <input
                 id="fileUploadInput"

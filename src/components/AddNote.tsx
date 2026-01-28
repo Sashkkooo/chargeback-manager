@@ -15,23 +15,25 @@ export default function AddNote({
     }
 
     return (
-        <div className="mt-6 p-4 border rounded">
-            <h3 className="font-semibold mb-2">Add Note</h3>
+        <div className="p-5 border rounded-lg bg-gray-50 shadow-sm space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">Add Note</h3>
 
             <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Write your internal note here..."
-                className="w-full border rounded p-2 mb-3"
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
                 rows={3}
             />
 
-            <button
-                onClick={handleSubmit}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-                Add Note
-            </button>
+            <div className="flex justify-end">
+                <button
+                    onClick={handleSubmit}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+                >
+                    Add Note
+                </button>
+            </div>
         </div>
     );
 }

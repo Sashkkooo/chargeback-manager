@@ -10,7 +10,7 @@ const stageColors: Record<CaseStage, string> = {
 export default function StageBadge({ stage }: { stage: CaseStage }) {
     return (
         <span
-            className={`px-2 py-1 text-xs font-semibold rounded ${stageColors[stage]}`}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg capitalize tracking-wide ${stageColors[stage]}`}
         >
             {stage}
         </span>

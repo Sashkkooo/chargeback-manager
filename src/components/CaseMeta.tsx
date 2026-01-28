@@ -2,22 +2,61 @@ import type { CaseItem } from "../types/case";
 
 export default function CaseMeta({ item }: { item: CaseItem }) {
     return (
-        <div className="space-y-4">
-            <div className="space-y-2">
-                <p><strong>ID:</strong> {item.id}</p>
-                <p><strong>Customer:</strong> {item.customer}</p>
-                <p><strong>Amount:</strong> ${item.amount.toFixed(2)}</p>
-                <p><strong>Status:</strong> {item.status}</p>
+        <div className="p-5 border rounded-lg bg-gray-50 shadow-sm space-y-6">
+
+            {/* Section 1: Basic Info */}
+            <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    Basic Information
+                </h3>
+
+                <div className="grid grid-cols-2 gap-y-1 text-sm">
+                    <p className="text-gray-600">ID:</p>
+                    <p className="font-medium text-gray-900">{item.id}</p>
+
+                    <p className="text-gray-600">Customer:</p>
+                    <p className="font-medium text-gray-900">{item.customer}</p>
+
+                    <p className="text-gray-600">Amount:</p>
+                    <p className="font-medium text-gray-900">${item.amount.toFixed(2)}</p>
+
+                    <p className="text-gray-600">Status:</p>
+                    <p className="font-medium text-gray-900 capitalize">{item.status}</p>
+                </div>
             </div>
 
-            <div className="space-y-2">
-                <p><strong>Reason:</strong> {item.reason}</p>
-                <p><strong>Merchant:</strong> {item.merchant}</p>
+            {/* Section 2: Case Details */}
+            <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    Case Details
+                </h3>
+
+                <div className="grid grid-cols-2 gap-y-1 text-sm">
+                    <p className="text-gray-600">Reason:</p>
+                    <p className="font-medium text-gray-900">{item.reason}</p>
+
+                    <p className="text-gray-600">Merchant:</p>
+                    <p className="font-medium text-gray-900">{item.merchant}</p>
+                </div>
             </div>
 
-            <div className="space-y-2">
-                <p><strong>Created At:</strong> {new Date(item.createdAt).toLocaleString()}</p>
-                <p><strong>Updated At:</strong> {new Date(item.updatedAt).toLocaleString()}</p>
+            {/* Section 3: Timestamps */}
+            <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    Timestamps
+                </h3>
+
+                <div className="grid grid-cols-2 gap-y-1 text-sm">
+                    <p className="text-gray-600">Created At:</p>
+                    <p className="font-medium text-gray-900">
+                        {new Date(item.createdAt).toLocaleString()}
+                    </p>
+
+                    <p className="text-gray-600">Updated At:</p>
+                    <p className="font-medium text-gray-900">
+                        {new Date(item.updatedAt).toLocaleString()}
+                    </p>
+                </div>
             </div>
         </div>
     );

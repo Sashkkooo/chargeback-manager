@@ -38,3 +38,6 @@ export interface CaseItem {
     evidence: EvidenceItem[];
     timeline: TimelineEvent[];
 }
+
+export type TimelineActor = "merchant" | "customer" | "system";
+
