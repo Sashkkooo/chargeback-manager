@@ -14,6 +14,7 @@ function makeCase(overrides: Partial<CaseItem>): CaseItem {
         status: "open",
         reason: "Item not received",
         merchant: "Store",
+        platform: "Stripe",
         stage: "inquiry",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -77,6 +78,38 @@ describe("Dashboard", () => {
         renderDashboard();
 
         await userEvent.click(screen.getByRole("button", { name: "arbitration" }));
+
+        expect(screen.getByText("Bob Smith")).toBeInTheDocument();
+        expect(screen.queryByText("Alice Johnson")).not.toBeInTheDocument();
+    });
+
+    it("filters by platform via the platform dropdown", async () => {
+        useCases.setState({
+            cases: [
+                makeCase({ customer: "Alice Johnson", platform: "PayPal" }),
+                makeCase({ customer: "Bob Smith", platform: "Stripe" }),
+            ],
+        });
+
+        renderDashboard();
+
+        await userEvent.selectOptions(screen.getByDisplayValue("All Platforms"), "PayPal");
+
+        expect(screen.getByText("Alice Johnson")).toBeInTheDocument();
+        expect(screen.queryByText("Bob Smith")).not.toBeInTheDocument();
+    });
+
+    it("matches platform in the free-text search", async () => {
+        useCases.setState({
+            cases: [
+                makeCase({ customer: "Alice Johnson", platform: "PayPal" }),
+                makeCase({ customer: "Bob Smith", platform: "Stripe" }),
+            ],
+        });
+
+        renderDashboard();
+
+        await userEvent.type(screen.getByPlaceholderText(/search by customer/i), "stripe");
 
         expect(screen.getByText("Bob Smith")).toBeInTheDocument();
         expect(screen.queryByText("Alice Johnson")).not.toBeInTheDocument();

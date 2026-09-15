@@ -13,6 +13,7 @@ function baseCaseInput() {
         status: "open" as const,
         reason: "Duplicate charge",
         merchant: "Test Store",
+        platform: "Stripe",
         stage: "inquiry" as const,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

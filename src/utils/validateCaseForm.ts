@@ -3,6 +3,7 @@ export interface CaseFormInput {
     amount: string;
     reason: string;
     merchant: string;
+    platform: string;
     deadline: string;
 }
 
@@ -28,6 +29,10 @@ export function validateCaseForm(input: CaseFormInput): CaseFormErrors {
 
     if (!input.merchant.trim()) {
         errors.merchant = "Merchant is required.";
+    }
+
+    if (!input.platform.trim()) {
+        errors.platform = "Platform is required.";
     }
 
     if (!input.deadline.trim()) {

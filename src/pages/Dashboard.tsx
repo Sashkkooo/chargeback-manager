@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import StageBadge from "../components/StageBadge";
 import StatusBadge from "../components/StatusBadge";
 import DashboardStats from "../components/DashboardStats";
+import { KNOWN_PLATFORMS } from "../constants/platforms";
 import type { CaseStage } from "../types/case";
 import { useState } from "react";
 
@@ -12,7 +13,12 @@ export default function Dashboard() {
 
     const [stageFilter, setStageFilter] = useState<CaseStage | "all">("all");
     const [statusFilter, setStatusFilter] = useState("all");
+    const [platformFilter, setPlatformFilter] = useState("all");
     const [search, setSearch] = useState("");
+
+    const platformOptions = Array.from(
+        new Set([...KNOWN_PLATFORMS, ...cases.map((c) => c.platform).filter(Boolean)])
+    ).sort((a, b) => a.localeCompare(b));
 
     function getDaysLeft(deadline: string) {
         const now = new Date();
@@ -24,12 +30,14 @@ export default function Dashboard() {
     const filteredCases = cases
         .filter((c) => stageFilter === "all" || c.stage === stageFilter)
         .filter((c) => statusFilter === "all" || c.status === statusFilter)
+        .filter((c) => platformFilter === "all" || c.platform === platformFilter)
         .filter((c) =>
             search.trim() === ""
                 ? true
                 : c.customer.toLowerCase().includes(search.toLowerCase()) ||
                 c.reason.toLowerCase().includes(search.toLowerCase()) ||
-                c.merchant.toLowerCase().includes(search.toLowerCase())
+                c.merchant.toLowerCase().includes(search.toLowerCase()) ||
+                c.platform.toLowerCase().includes(search.toLowerCase())
         );
 
     const sortedCases = [...filteredCases].sort((a, b) => {
@@ -94,9 +102,22 @@ export default function Dashboard() {
                     <option value="lost">Lost</option>
                 </select>
 
+                <select
+                    value={platformFilter}
+                    onChange={(e) => setPlatformFilter(e.target.value)}
+                    className="border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                >
+                    <option value="all">All Platforms</option>
+                    {platformOptions.map((platform) => (
+                        <option key={platform} value={platform}>
+                            {platform}
+                        </option>
+                    ))}
+                </select>
+
                 <input
                     type="text"
-                    placeholder="Search by customer, reason, merchant..."
+                    placeholder="Search by customer, reason, merchant, platform..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="border rounded px-3 py-2 text-sm flex-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -134,6 +155,7 @@ export default function Dashboard() {
                             <th className="p-3">Amount</th>
                             <th className="p-3">Status</th>
                             <th className="p-3">Stage</th>
+                            <th className="p-3">Platform</th>
                             <th className="p-3">Deadline</th>
                             <th className="p-3">Actions</th>
                         </tr>
@@ -158,6 +180,8 @@ export default function Dashboard() {
                                 <td className="p-3">
                                     <StageBadge stage={c.stage} />
                                 </td>
+
+                                <td className="p-3 text-gray-700">{c.platform}</td>
 
                                 <td className="p-3">
                                     {(() => {

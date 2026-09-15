@@ -35,6 +35,9 @@ export default function CaseMeta({ item }: { item: CaseItem }) {
 
                     <p className="text-gray-600">Merchant:</p>
                     <p className="font-medium text-gray-900">{item.merchant}</p>
+
+                    <p className="text-gray-600">Platform:</p>
+                    <p className="font-medium text-gray-900">{item.platform}</p>
                 </div>
             </div>
 

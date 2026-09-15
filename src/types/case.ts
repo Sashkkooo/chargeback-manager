@@ -28,6 +28,7 @@ export interface CaseItem {
 
     reason: string;
     merchant: string;
+    platform: string;
 
     stage: CaseStage;
 

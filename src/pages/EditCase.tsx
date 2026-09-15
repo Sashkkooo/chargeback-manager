@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useCases } from "../store/useCases";
 import type { CaseItem, CaseStatus, CaseStage, TimelineEvent, TimelineActor } from "../types/case";
 import { validateCaseForm, type CaseFormErrors } from "../utils/validateCaseForm";
+import PlatformCombobox from "../components/PlatformCombobox";
+import { KNOWN_PLATFORMS } from "../constants/platforms";
 
 
 function toDateInputValue(iso: string): string {
@@ -22,6 +24,7 @@ export default function EditCase() {
     const [status, setStatus] = useState<CaseStatus>(item?.status ?? "open");
     const [reason, setReason] = useState(item?.reason ?? "");
     const [merchant, setMerchant] = useState(item?.merchant ?? "");
+    const [platform, setPlatform] = useState(item?.platform ?? "");
     const [stage, setStage] = useState<CaseStage>(item?.stage ?? "inquiry");
     const [deadline, setDeadline] = useState(item ? toDateInputValue(item.deadline) : "");
     const [errors, setErrors] = useState<CaseFormErrors>({});
@@ -43,7 +46,7 @@ export default function EditCase() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const validationErrors = validateCaseForm({ customer, amount, reason, merchant, deadline });
+        const validationErrors = validateCaseForm({ customer, amount, reason, merchant, platform, deadline });
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length > 0) return;
 
@@ -53,6 +56,7 @@ export default function EditCase() {
             status,
             reason,
             merchant,
+            platform,
             stage,
             deadline: new Date(deadline).toISOString(),
         };
@@ -105,6 +109,10 @@ export default function EditCase() {
 
         if (oldCase.merchant !== newCase.merchant) {
             changes.push(`Merchant changed from "${oldCase.merchant}" to "${newCase.merchant}"`);
+        }
+
+        if (oldCase.platform !== newCase.platform) {
+            changes.push(`Platform changed from "${oldCase.platform}" to "${newCase.platform}"`);
         }
 
         if (oldCase.stage !== newCase.stage) {
@@ -185,6 +193,17 @@ export default function EditCase() {
                         className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.merchant ? "border-red-400" : ""}`}
                     />
                     {errors.merchant && <p className="text-sm text-red-600">{errors.merchant}</p>}
+                </div>
+
+                <div className="space-y-2">
+                    <label className="block font-medium text-gray-700">Platform</label>
+                    <PlatformCombobox
+                        value={platform}
+                        onChange={setPlatform}
+                        options={KNOWN_PLATFORMS}
+                        className={errors.platform ? "border-red-400" : ""}
+                    />
+                    {errors.platform && <p className="text-sm text-red-600">{errors.platform}</p>}
                 </div>
 
                 <div className="space-y-2">

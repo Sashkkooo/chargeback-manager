@@ -7,6 +7,7 @@ function validInput() {
         amount: "42.50",
         reason: "Item not received",
         merchant: "My Store",
+        platform: "Stripe",
         deadline: "2030-01-01",
     };
 }
@@ -35,6 +36,11 @@ describe("validateCaseForm", () => {
         const errors = validateCaseForm({ ...validInput(), reason: "", merchant: "" });
         expect(errors.reason).toBeDefined();
         expect(errors.merchant).toBeDefined();
+    });
+
+    it("requires a platform", () => {
+        const errors = validateCaseForm({ ...validInput(), platform: "  " });
+        expect(errors.platform).toBeDefined();
     });
 
     it("requires a valid deadline", () => {

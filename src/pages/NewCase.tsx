@@ -4,6 +4,8 @@ import { useCases } from "../store/useCases";
 import type { CaseStatus, CaseStage } from "../types/case";
 import CaseStatusSelector from "../components/CaseStatusSelector";
 import CaseStageSelector from "../components/CaseStageSelector";
+import PlatformCombobox from "../components/PlatformCombobox";
+import { KNOWN_PLATFORMS } from "../constants/platforms";
 import { validateCaseForm, type CaseFormErrors } from "../utils/validateCaseForm";
 
 export default function NewCase() {
@@ -15,6 +17,7 @@ export default function NewCase() {
     const [status, setStatus] = useState<CaseStatus>("open");
     const [reason, setReason] = useState("");
     const [merchant, setMerchant] = useState("");
+    const [platform, setPlatform] = useState("");
     const [deadline, setDeadline] = useState("");
     const [stage, setStage] = useState<CaseStage>("inquiry");
     const [errors, setErrors] = useState<CaseFormErrors>({});
@@ -22,7 +25,7 @@ export default function NewCase() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const validationErrors = validateCaseForm({ customer, amount, reason, merchant, deadline });
+        const validationErrors = validateCaseForm({ customer, amount, reason, merchant, platform, deadline });
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length > 0) return;
 
@@ -32,6 +35,7 @@ export default function NewCase() {
             status,
             reason,
             merchant,
+            platform,
             stage,
             deadline: new Date(deadline).toISOString(),
             createdAt: new Date().toISOString(),
@@ -110,6 +114,17 @@ export default function NewCase() {
                         className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.merchant ? "border-red-400" : ""}`}
                     />
                     {errors.merchant && <p className="text-sm text-red-600">{errors.merchant}</p>}
+                </div>
+
+                <div className="space-y-2">
+                    <label className="block font-medium text-gray-700">Platform</label>
+                    <PlatformCombobox
+                        value={platform}
+                        onChange={setPlatform}
+                        options={KNOWN_PLATFORMS}
+                        className={errors.platform ? "border-red-400" : ""}
+                    />
+                    {errors.platform && <p className="text-sm text-red-600">{errors.platform}</p>}
                 </div>
 
                 <div className="space-y-2">
