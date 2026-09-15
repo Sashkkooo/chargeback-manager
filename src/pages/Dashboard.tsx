@@ -1,5 +1,5 @@
 import { useCases } from "../store/useCases";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import StageBadge from "../components/StageBadge";
 import StatusBadge from "../components/StatusBadge";
 import DashboardStats from "../components/DashboardStats";
@@ -42,12 +42,12 @@ export default function Dashboard() {
             <div className="flex items-center justify-between gap-3 flex-wrap">
                 <h1 className="text-3xl font-bold tracking-tight">Cases</h1>
 
-                <a
-                    href="/new"
+                <Link
+                    to="/new"
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
                 >
                     + New Case
-                </a>
+                </Link>
             </div>
 
             <DashboardStats cases={cases} />
@@ -116,12 +116,12 @@ export default function Dashboard() {
                             : "Try adjusting the search or filters above."}
                     </p>
                     {cases.length === 0 && (
-                        <a
-                            href="/new"
+                        <Link
+                            to="/new"
                             className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
                         >
                             + New Case
-                        </a>
+                        </Link>
                     )}
                 </div>
             ) : (
