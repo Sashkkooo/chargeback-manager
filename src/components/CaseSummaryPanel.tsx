@@ -24,7 +24,6 @@ export default function CaseSummaryPanel({
                 Case Summary
             </h2>
 
-            {/* Days Left */}
             <div className="flex items-center justify-between">
                 <span className="text-gray-600">Days Left</span>
                 <span
@@ -34,19 +33,16 @@ export default function CaseSummaryPanel({
                 </span>
             </div>
 
-            {/* Evidence Count */}
             <div className="flex items-center justify-between">
                 <span className="text-gray-600">Evidence Items</span>
                 <span className="font-semibold text-gray-900">{evidenceCount}</span>
             </div>
 
-            {/* Stage */}
             <div className="flex items-center justify-between">
                 <span className="text-gray-600">Stage</span>
                 <span className="font-semibold capitalize text-gray-900">{stage}</span>
             </div>
 
-            {/* Last Updated */}
             <div className="flex items-center justify-between">
                 <span className="text-gray-600">Last Updated</span>
                 <span className="font-semibold text-gray-900">

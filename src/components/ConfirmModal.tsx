@@ -13,17 +13,14 @@ export default function ConfirmModal({
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm space-y-5">
 
-                {/* Title */}
                 <h2 className="text-xl font-semibold text-gray-900 tracking-tight">
                     {title}
                 </h2>
 
-                {/* Message */}
                 <p className="text-gray-700 text-sm leading-relaxed">
                     {message}
                 </p>
 
-                {/* Actions */}
                 <div className="flex justify-end gap-3 pt-2">
                     <button
                         onClick={onCancel}

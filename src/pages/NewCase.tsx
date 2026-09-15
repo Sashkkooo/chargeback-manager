@@ -4,6 +4,7 @@ import { useCases } from "../store/useCases";
 import type { CaseStatus, CaseStage } from "../types/case";
 import CaseStatusSelector from "../components/CaseStatusSelector";
 import CaseStageSelector from "../components/CaseStageSelector";
+import { validateCaseForm, type CaseFormErrors } from "../utils/validateCaseForm";
 
 export default function NewCase() {
     const navigate = useNavigate();
@@ -16,9 +17,14 @@ export default function NewCase() {
     const [merchant, setMerchant] = useState("");
     const [deadline, setDeadline] = useState("");
     const [stage, setStage] = useState<CaseStage>("inquiry");
+    const [errors, setErrors] = useState<CaseFormErrors>({});
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        const validationErrors = validateCaseForm({ customer, amount, reason, merchant, deadline });
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0) return;
 
         addCase({
             customer,
@@ -45,86 +51,83 @@ export default function NewCase() {
     };
 
     return (
-        <div className="max-w-xl mx-auto bg-white p-10 shadow rounded-lg space-y-10">
+        <div className="max-w-xl mx-auto bg-white p-6 md:p-10 shadow rounded-lg space-y-8 md:space-y-10">
             <h1 className="text-3xl font-bold tracking-tight">Create New Case</h1>
 
             <form onSubmit={handleSubmit} className="space-y-8">
 
-                {/* Customer */}
                 <div className="space-y-2">
                     <label className="block font-medium text-gray-700">Customer Name</label>
                     <input
                         type="text"
                         value={customer}
                         onChange={(e) => setCustomer(e.target.value)}
-                        required
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.customer}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.customer ? "border-red-400" : ""}`}
                     />
+                    {errors.customer && <p className="text-sm text-red-600">{errors.customer}</p>}
                 </div>
 
-                {/* Amount */}
                 <div className="space-y-2">
                     <label className="block font-medium text-gray-700">Amount ($)</label>
                     <input
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        required
                         min="0"
                         step="0.01"
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.amount}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.amount ? "border-red-400" : ""}`}
                     />
+                    {errors.amount && <p className="text-sm text-red-600">{errors.amount}</p>}
                 </div>
 
-                {/* Status */}
                 <div className="space-y-2">
                     <CaseStatusSelector status={status} onChange={setStatus} />
                 </div>
 
-                {/* Reason */}
                 <div className="space-y-2">
                     <label className="block font-medium text-gray-700">Reason</label>
                     <input
                         type="text"
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
-                        required
                         placeholder="Unauthorized transaction"
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.reason}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.reason ? "border-red-400" : ""}`}
                     />
+                    {errors.reason && <p className="text-sm text-red-600">{errors.reason}</p>}
                 </div>
 
-                {/* Merchant */}
                 <div className="space-y-2">
                     <label className="block font-medium text-gray-700">Merchant</label>
                     <input
                         type="text"
                         value={merchant}
                         onChange={(e) => setMerchant(e.target.value)}
-                        required
                         placeholder="My Online Store"
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.merchant}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.merchant ? "border-red-400" : ""}`}
                     />
+                    {errors.merchant && <p className="text-sm text-red-600">{errors.merchant}</p>}
                 </div>
 
-                {/* Stage */}
                 <div className="space-y-2">
-                    <CaseStageSelector item={{ stage } as any} onChange={setStage} />
+                    <CaseStageSelector stage={stage} onChange={setStage} />
                 </div>
 
-                {/* Deadline */}
                 <div className="space-y-2">
                     <label className="block font-medium text-gray-700">Deadline</label>
                     <input
                         type="date"
                         value={deadline}
                         onChange={(e) => setDeadline(e.target.value)}
-                        required
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.deadline}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.deadline ? "border-red-400" : ""}`}
                     />
+                    {errors.deadline && <p className="text-sm text-red-600">{errors.deadline}</p>}
                 </div>
 
-                {/* Submit */}
                 <button
                     type="submit"
                     className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"

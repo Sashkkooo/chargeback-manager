@@ -39,12 +39,10 @@ export default function CaseDetails() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto bg-white p-10 shadow rounded-lg space-y-10">
+        <div className="max-w-2xl mx-auto bg-white p-6 md:p-10 shadow rounded-lg space-y-8 md:space-y-10">
 
-            {/* Title */}
             <h1 className="text-3xl font-bold tracking-tight">Case Details</h1>
 
-            {/* Summary */}
             <CaseSummaryPanel
                 deadline={item.deadline}
                 evidenceCount={item.evidence.length}
@@ -52,20 +50,17 @@ export default function CaseDetails() {
                 stage={item.stage}
             />
 
-            {/* Header */}
             <CaseHeader
                 stage={item.stage}
                 status={item.status}
                 deadline={item.deadline}
             />
 
-            {/* Meta */}
             <CaseMeta item={item} />
 
-            {/* Stage Selector */}
             <div className="space-y-2">
                 <CaseStageSelector
-                    item={item}
+                    stage={item.stage}
                     onChange={(newStage) => {
                         updateCase(item.id, {
                             stage: newStage,
@@ -83,7 +78,6 @@ export default function CaseDetails() {
                 />
             </div>
 
-            {/* Status Selector */}
             <div className="space-y-2">
                 <CaseStatusSelector
                     status={item.status}
@@ -105,7 +99,6 @@ export default function CaseDetails() {
                 />
             </div>
 
-            {/* Evidence Upload */}
             <div className="space-y-2">
                 <label className="font-medium text-gray-700">Upload Evidence</label>
                 <EvidenceUpload
@@ -126,7 +119,6 @@ export default function CaseDetails() {
                 />
             </div>
 
-            {/* Evidence List */}
             <EvidenceList
                 evidence={item.evidence}
                 onView={(index) => setViewerIndex(index)}
@@ -148,7 +140,6 @@ export default function CaseDetails() {
                 }}
             />
 
-            {/* Add Note */}
             <AddNote
                 onAdd={(noteText) => {
                     const newEvent = {
@@ -164,16 +155,13 @@ export default function CaseDetails() {
                 }}
             />
 
-            {/* Timeline */}
             <TimelineAccordion timeline={item.timeline} />
 
-            {/* Actions */}
             <CaseActions
                 onEdit={() => navigate(`/case/${item.id}/edit`)}
                 onDelete={() => setShowConfirm(true)}
             />
 
-            {/* Delete Confirmation */}
             {showConfirm && (
                 <ConfirmModal
                     title="Delete Case"
@@ -186,7 +174,6 @@ export default function CaseDetails() {
                 />
             )}
 
-            {/* Evidence Viewer Modal */}
             {viewerIndex !== null && (
                 <EvidenceModal
                     item={item.evidence[viewerIndex]}

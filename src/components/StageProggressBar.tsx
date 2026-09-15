@@ -14,7 +14,6 @@ export default function StageProgressBar({ stage }: { stage: CaseStage }) {
         <div className="py-4">
             <div className="flex items-center justify-between relative">
 
-                {/* Horizontal line behind the steps */}
                 <div className="absolute top-2 left-0 right-0 h-1 bg-gray-200 rounded" />
 
                 {stages.map((s, index) => {
@@ -36,19 +35,16 @@ export default function StageProgressBar({ stage }: { stage: CaseStage }) {
                             key={s}
                             className="flex-1 flex flex-col items-center relative z-10"
                         >
-                            {/* Step dot */}
                             <div
                                 className={`w-5 h-5 rounded-full border-2 border-white shadow ${dotColor}`}
                             />
 
-                            {/* Label */}
                             <span
                                 className={`mt-2 text-xs capitalize tracking-wide ${labelColor}`}
                             >
                                 {s}
                             </span>
 
-                            {/* Progress line segment */}
                             {index < stages.length - 1 && (
                                 <div
                                     className={`

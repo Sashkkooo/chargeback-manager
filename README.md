@@ -1,73 +1,89 @@
-# React + TypeScript + Vite
+# Chargeback Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A single-page app for tracking credit card chargeback disputes through their
+lifecycle — from initial inquiry to arbitration — with evidence uploads,
+deadline tracking, and a full audit timeline.
 
-Currently, two official plugins are available:
+Built as a frontend portfolio project: React + TypeScript on Vite, styled
+with Tailwind, state managed with Zustand and persisted to `localStorage`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **Case dashboard** — search, filter by stage/status, at-a-glance stats
+  (total/won/lost/win rate), and a deadline countdown that turns yellow/red
+  as a case approaches its response window.
+- **Case lifecycle** — move a case through `inquiry → chargeback →
+  pre-arbitration → arbitration`, with status tracking (`open`, `pending`,
+  `won`, `lost`).
+- **Evidence** — drag-and-drop upload, a lightbox viewer with next/prev
+  navigation, image/PDF preview, and download.
+- **Timeline** — every field change, stage/status update, evidence upload,
+  and manual note is recorded as a timestamped, diff-based audit event.
+- **Persistence** — cases survive a page reload (backed by `localStorage`
+  via Zustand's `persist` middleware); no backend required to try it out.
+- **Responsive** — a collapsible mobile nav and a scrollable table keep the
+  dashboard usable down to phone width.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech stack
 
-## Expanding the ESLint configuration
+| Layer      | Choice                                   |
+|------------|-------------------------------------------|
+| Framework  | React 19 + TypeScript, built with Vite    |
+| Routing    | React Router v7                           |
+| State      | Zustand (with `persist` middleware)       |
+| Styling    | Tailwind CSS v4                           |
+| Testing    | Vitest + React Testing Library            |
+| Tooling    | ESLint, `typescript-eslint`               |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Running locally
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Then open the printed local URL (typically `http://localhost:5173`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Other scripts:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build       # type-check + production build
+npm run lint        # ESLint
+npm run preview     # preview the production build locally
+npm run test        # run the test suite once
+npm run test:watch  # run tests in watch mode
 ```
+
+## Project structure
+
+```
+src/
+  components/   # Reusable UI pieces (badges, selectors, evidence, timeline, modals)
+  layouts/      # App shell (MainLayout)
+  pages/        # Route-level views: Dashboard, NewCase, CaseDetail, EditCase
+  store/        # Zustand store (useCases) — single source of truth for case data
+  types/        # Shared domain types (CaseItem, CaseStage, CaseStatus, ...)
+  utils/        # Pure helpers (e.g. form validation), unit-tested in isolation
+  test/         # Vitest setup (jest-dom matchers)
+```
+
+`*.test.ts` / `*.test.tsx` files sit next to the code they cover rather than
+in a separate `__tests__` tree.
+
+## Known limitations
+
+This is a frontend-only demo — there is intentionally no backend yet:
+
+- Data lives in the browser's `localStorage`, scoped to one device/browser.
+- Evidence files are stored as base64 data URLs in that same store, so very
+  large files or many uploads can approach browser storage limits.
+- There's no multi-user support, auth, or server-side validation.
+
+These are the natural next steps if this grows past a portfolio piece: a
+real database, file storage for evidence, and an API layer behind the
+existing UI (the Zustand store's interface was kept deliberately close to
+what a REST/RPC client would look like, to make that swap easier later).
+
+## License
+
+MIT

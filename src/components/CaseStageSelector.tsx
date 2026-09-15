@@ -1,10 +1,10 @@
-import type { CaseItem, CaseStage } from "../types/case";
+import type { CaseStage } from "../types/case";
 
 export default function CaseStageSelector({
-    item,
+    stage,
     onChange,
 }: {
-    item: CaseItem;
+    stage: CaseStage;
     onChange: (newStage: CaseStage) => void;
 }) {
     return (
@@ -12,7 +12,7 @@ export default function CaseStageSelector({
             <label className="block font-medium text-gray-700">Stage</label>
 
             <select
-                value={item.stage}
+                value={stage}
                 onChange={(e) => onChange(e.target.value as CaseStage)}
                 className="w-full border rounded-lg px-3 py-2 text-sm bg-white
                            focus:ring-2 focus:ring-blue-500 focus:outline-none"

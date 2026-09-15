@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCases } from "../store/useCases";
-import type { CaseStatus, CaseStage, TimelineEvent, TimelineActor } from "../types/case";
+import type { CaseItem, CaseStatus, CaseStage, TimelineEvent, TimelineActor } from "../types/case";
+import { validateCaseForm, type CaseFormErrors } from "../utils/validateCaseForm";
+
+
+function toDateInputValue(iso: string): string {
+    const time = new Date(iso).getTime();
+    return Number.isNaN(time) ? "" : iso.slice(0, 10);
+}
 
 export default function EditCase() {
     const { id } = useParams();
@@ -9,6 +16,15 @@ export default function EditCase() {
 
     const { cases, updateCase } = useCases();
     const item = cases.find((c) => c.id === id);
+
+    const [customer, setCustomer] = useState(item?.customer ?? "");
+    const [amount, setAmount] = useState(String(item?.amount ?? ""));
+    const [status, setStatus] = useState<CaseStatus>(item?.status ?? "open");
+    const [reason, setReason] = useState(item?.reason ?? "");
+    const [merchant, setMerchant] = useState(item?.merchant ?? "");
+    const [stage, setStage] = useState<CaseStage>(item?.stage ?? "inquiry");
+    const [deadline, setDeadline] = useState(item ? toDateInputValue(item.deadline) : "");
+    const [errors, setErrors] = useState<CaseFormErrors>({});
 
     if (!item) {
         return (
@@ -24,25 +40,21 @@ export default function EditCase() {
         );
     }
 
-    const [customer, setCustomer] = useState(item.customer);
-    const [amount, setAmount] = useState(String(item.amount));
-    const [status, setStatus] = useState<CaseStatus>(item.status);
-    const [reason, setReason] = useState(item.reason);
-    const [merchant, setMerchant] = useState(item.merchant);
-    const [stage, setStage] = useState<CaseStage>(item.stage);
-    const [deadline, setDeadline] = useState(item.deadline);
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const updatedCase: Partial<typeof item> = {
+        const validationErrors = validateCaseForm({ customer, amount, reason, merchant, deadline });
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0) return;
+
+        const updatedCase: Partial<CaseItem> = {
             customer,
             amount: Number(amount),
             status,
             reason,
             merchant,
             stage,
-            deadline,
+            deadline: new Date(deadline).toISOString(),
         };
 
         const changes = diffCase(item, updatedCase);
@@ -72,7 +84,7 @@ export default function EditCase() {
         navigate(`/case/${item.id}`);
     };
 
-    function diffCase(oldCase: any, newCase: Partial<typeof oldCase>) {
+    function diffCase(oldCase: CaseItem, newCase: Partial<CaseItem>) {
         const changes: string[] = [];
 
         if (oldCase.customer !== newCase.customer) {
@@ -107,7 +119,7 @@ export default function EditCase() {
     }
 
     return (
-        <div className="max-w-xl mx-auto bg-white p-10 shadow rounded-lg space-y-10">
+        <div className="max-w-xl mx-auto bg-white p-6 md:p-10 shadow rounded-lg space-y-8 md:space-y-10">
             <h1 className="text-3xl font-bold tracking-tight">Edit Case</h1>
 
             <form onSubmit={handleSubmit} className="space-y-8">
@@ -117,9 +129,10 @@ export default function EditCase() {
                         type="text"
                         value={customer}
                         onChange={(e) => setCustomer(e.target.value)}
-                        required
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.customer}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.customer ? "border-red-400" : ""}`}
                     />
+                    {errors.customer && <p className="text-sm text-red-600">{errors.customer}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -128,11 +141,12 @@ export default function EditCase() {
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        required
                         min="0"
                         step="0.01"
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.amount}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.amount ? "border-red-400" : ""}`}
                     />
+                    {errors.amount && <p className="text-sm text-red-600">{errors.amount}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -155,9 +169,10 @@ export default function EditCase() {
                         type="text"
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
-                        required
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.reason}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.reason ? "border-red-400" : ""}`}
                     />
+                    {errors.reason && <p className="text-sm text-red-600">{errors.reason}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -166,9 +181,10 @@ export default function EditCase() {
                         type="text"
                         value={merchant}
                         onChange={(e) => setMerchant(e.target.value)}
-                        required
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.merchant}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.merchant ? "border-red-400" : ""}`}
                     />
+                    {errors.merchant && <p className="text-sm text-red-600">{errors.merchant}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -191,8 +207,10 @@ export default function EditCase() {
                         type="date"
                         value={deadline}
                         onChange={(e) => setDeadline(e.target.value)}
-                        className="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        aria-invalid={!!errors.deadline}
+                        className={`w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.deadline ? "border-red-400" : ""}`}
                     />
+                    {errors.deadline && <p className="text-sm text-red-600">{errors.deadline}</p>}
                 </div>
 
                 <button

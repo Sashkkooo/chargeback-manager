@@ -2,6 +2,7 @@ import { useCases } from "../store/useCases";
 import { useNavigate } from "react-router-dom";
 import StageBadge from "../components/StageBadge";
 import StatusBadge from "../components/StatusBadge";
+import DashboardStats from "../components/DashboardStats";
 import type { CaseStage } from "../types/case";
 import { useState } from "react";
 
@@ -38,8 +39,7 @@ export default function Dashboard() {
     return (
         <div className="space-y-10">
 
-            {/* HEADER */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
                 <h1 className="text-3xl font-bold tracking-tight">Cases</h1>
 
                 <a
@@ -50,13 +50,14 @@ export default function Dashboard() {
                 </a>
             </div>
 
-            {/* QUICK FILTERS */}
+            <DashboardStats cases={cases} />
+
             <div className="flex items-center gap-2 flex-wrap">
-                {["all", "inquiry", "chargeback", "pre-arbitration", "arbitration"].map(
+                {(["all", "inquiry", "chargeback", "pre-arbitration", "arbitration"] as const).map(
                     (stage) => (
                         <button
                             key={stage}
-                            onClick={() => setStageFilter(stage as any)}
+                            onClick={() => setStageFilter(stage)}
                             className={`px-3 py-1.5 rounded text-sm font-medium transition ${stageFilter === stage
                                     ? "bg-blue-600 text-white"
                                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -68,11 +69,10 @@ export default function Dashboard() {
                 )}
             </div>
 
-            {/* FILTER BAR */}
-            <div className="bg-white p-4 rounded-lg shadow flex gap-4 items-center">
+            <div className="bg-white p-4 rounded-lg shadow flex flex-col md:flex-row gap-3 md:gap-4 md:items-center">
                 <select
                     value={stageFilter}
-                    onChange={(e) => setStageFilter(e.target.value as any)}
+                    onChange={(e) => setStageFilter(e.target.value as CaseStage | "all")}
                     className="border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 >
                     <option value="all">All Stages</option>
@@ -103,8 +103,29 @@ export default function Dashboard() {
                 />
             </div>
 
-            {/* TABLE */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
+            {sortedCases.length === 0 ? (
+                <div className="bg-white shadow rounded-lg p-12 text-center space-y-3">
+                    <p className="text-lg font-semibold text-gray-800">
+                        {cases.length === 0
+                            ? "No cases yet"
+                            : "No cases match your filters"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                        {cases.length === 0
+                            ? "Create your first chargeback case to get started."
+                            : "Try adjusting the search or filters above."}
+                    </p>
+                    {cases.length === 0 && (
+                        <a
+                            href="/new"
+                            className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                        >
+                            + New Case
+                        </a>
+                    )}
+                </div>
+            ) : (
+            <div className="bg-white shadow rounded-lg overflow-x-auto">
                 <table className="w-full text-left">
                     <thead className="bg-gray-100 border-b">
                         <tr className="text-sm text-gray-700">
@@ -124,7 +145,9 @@ export default function Dashboard() {
                                 key={c.id}
                                 className="border-b hover:bg-gray-50 transition"
                             >
-                                <td className="p-3">{c.id}</td>
+                                <td className="p-3 font-mono text-xs text-gray-500" title={c.id}>
+                                    {c.id.slice(0, 8)}
+                                </td>
                                 <td className="p-3">{c.customer}</td>
                                 <td className="p-3">${c.amount.toFixed(2)}</td>
 
@@ -165,6 +188,7 @@ export default function Dashboard() {
                     </tbody>
                 </table>
             </div>
+            )}
         </div>
     );
 }

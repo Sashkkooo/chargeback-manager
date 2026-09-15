@@ -3,8 +3,7 @@ import type { CaseItem } from "../types/case";
 export default function CaseMeta({ item }: { item: CaseItem }) {
     return (
         <div className="p-5 border rounded-lg bg-gray-50 shadow-sm space-y-6">
-
-            {/* Section 1: Basic Info */}
+     
             <div className="space-y-1">
                 <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
                     Basic Information
@@ -25,7 +24,6 @@ export default function CaseMeta({ item }: { item: CaseItem }) {
                 </div>
             </div>
 
-            {/* Section 2: Case Details */}
             <div className="space-y-1">
                 <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
                     Case Details
@@ -40,7 +38,6 @@ export default function CaseMeta({ item }: { item: CaseItem }) {
                 </div>
             </div>
 
-            {/* Section 3: Timestamps */}
             <div className="space-y-1">
                 <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
                     Timestamps

@@ -16,16 +16,14 @@ export default function CaseHeader({
     return (
         <div className="p-5 border rounded-lg bg-gray-50 shadow-sm space-y-4">
 
-            {/* Progress Bar */}
+           
             <StageProgressBar stage={stage} />
 
-            {/* Badges */}
             <div className="flex items-center gap-3">
                 <StageBadge stage={stage} />
                 <StatusBadge status={status} />
             </div>
 
-            {/* Deadline */}
             <DeadlineTimer deadline={deadline} />
         </div>
     );

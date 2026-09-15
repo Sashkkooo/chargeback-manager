@@ -26,7 +26,6 @@ export default function EvidenceList({
                     className="flex items-center gap-4 p-4 border rounded-lg bg-white shadow-sm 
                                cursor-pointer hover:bg-gray-50 transition"
                 >
-                    {/* Thumbnail */}
                     <div>
                         {ev.type.startsWith("image/") ? (
                             <img
@@ -41,7 +40,6 @@ export default function EvidenceList({
                         )}
                     </div>
 
-                    {/* Filename */}
                     <div className="flex-1">
                         <span className="text-blue-600 underline break-all font-medium">
                             {ev.filename}
@@ -51,7 +49,6 @@ export default function EvidenceList({
                         </p>
                     </div>
 
-                    {/* Delete Button */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();

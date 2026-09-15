@@ -8,15 +8,26 @@ export default function EvidenceUpload({
 }) {
     const [isDrag, setIsDrag] = useState(false);
 
-    function handleFiles(files: File[]) {
+    function readAsDataUrl(file: File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function handleFiles(files: File[]) {
         if (files.length === 0) return;
 
-        const newEvidenceItems: EvidenceItem[] = files.map((file) => ({
-            id: crypto.randomUUID(),
-            filename: file.name,
-            url: URL.createObjectURL(file),
-            type: file.type,
-        }));
+        const newEvidenceItems: EvidenceItem[] = await Promise.all(
+            files.map(async (file) => ({
+                id: crypto.randomUUID(),
+                filename: file.name,
+                url: await readAsDataUrl(file),
+                type: file.type,
+            }))
+        );
 
         onUpload(newEvidenceItems);
     }
